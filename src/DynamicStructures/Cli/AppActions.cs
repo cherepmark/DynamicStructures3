@@ -6,6 +6,7 @@ using DynamicStructures.DataStructures;
 using DynamicStructures.Demo;
 using DynamicStructures.Expressions;
 using DynamicStructures.Infrastructure;
+using DynamicStructures.Trees;
 
 namespace DynamicStructures.Cli;
 
@@ -122,6 +123,29 @@ public static class AppActions
             writer.WriteLine($"[{line.LineNumber}] {line.Expression}");
             ConvertInfixExpression(line.Expression, writer);
         }
+    }
+
+    public static void RunTreeBuilder(string? prefix, TextWriter writer)
+    {
+        ArgumentNullException.ThrowIfNull(writer);
+        var input = string.IsNullOrWhiteSpace(prefix) ? TreeBuilder.DefaultPrefix : prefix;
+
+        writer.WriteLine($"Префиксная запись: {input}");
+        if (!TreeBuilder.TryBuild(input, out var root, out var error))
+        {
+            writer.WriteLine($"Ошибка: {error}");
+            return;
+        }
+
+        writer.WriteLine(
+            $"Узлов: {TreeBuilder.CountNodes(root)}; листьев: {TreeBuilder.CountLeaves(root)}; " +
+            $"высота: {TreeBuilder.Height(root)}.");
+        writer.WriteLine($"Preorder: {TreeBuilder.Preorder(root)}");
+        writer.WriteLine($"Inorder: {TreeBuilder.Inorder(root)}");
+        writer.WriteLine($"Postorder: {TreeBuilder.Postorder(root)}");
+        writer.WriteLine("Дерево (L/R, * — пустая связь):");
+        writer.WriteLine(TreeBuilder.ToAscii(root));
+        writer.WriteLine($"Обратная префиксная запись: {TreeBuilder.SerializePrefix(root)}");
     }
 
     public static void MeasureStackFile(string? path, int repeats, TextWriter writer)
@@ -271,6 +295,20 @@ public static class AppActions
             var demoOutput = new StringWriter();
             RunListDemo(demoOutput);
             Check("демонстрация 12 операций списка выполнена", demoOutput.ToString().Contains("12. Обмен"));
+
+            var tree = TreeBuilder.Build(TreeBuilder.DefaultPrefix);
+            Check("дерево из префиксной записи: 9 узлов, 4 листа, высота 4",
+                TreeBuilder.CountNodes(tree) == 9 &&
+                TreeBuilder.CountLeaves(tree) == 4 &&
+                TreeBuilder.Height(tree) == 4,
+                $"узлов: {TreeBuilder.CountNodes(tree)}, листьев: {TreeBuilder.CountLeaves(tree)}, " +
+                $"высота: {TreeBuilder.Height(tree)}");
+            Check("дерево: обходы и обратная префиксная запись",
+                TreeBuilder.Preorder(tree) == "A B D G C E F H J" &&
+                TreeBuilder.Inorder(tree) == "D G B A E C H F J" &&
+                TreeBuilder.Postorder(tree) == "G D B E H J F C A" &&
+                TreeBuilder.SerializePrefix(tree) == TreeBuilder.DefaultPrefix,
+                TreeBuilder.Preorder(tree));
 
             var applicationsOutput = new StringWriter();
             RunApplications(applicationsOutput);

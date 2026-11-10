@@ -1,6 +1,7 @@
 using DynamicStructures.Core;
 using DynamicStructures.DataStructures;
 using DynamicStructures.Infrastructure;
+using DynamicStructures.Trees;
 
 namespace DynamicStructures.Cli;
 
@@ -43,6 +44,7 @@ public sealed class ConsoleMenu
             _output.WriteLine("17. Сравнительные бенчмарки стека и очередей");
             _output.WriteLine("18. Перегенерировать файлы сценариев");
             _output.WriteLine("19. Показать пути проекта");
+            _output.WriteLine("20. Бинарное дерево из префиксной записи");
             _output.WriteLine("0.  Выход");
 
             var choice = Prompt("Выбор");
@@ -107,6 +109,14 @@ public sealed class ConsoleMenu
                     case "19":
                         AppActions.PrintPaths(_output);
                         break;
+                    case "20":
+                    {
+                        var prefix = Prompt($"Префиксная запись (Enter — {TreeBuilder.DefaultPrefix})");
+                        AppActions.RunTreeBuilder(
+                            string.IsNullOrWhiteSpace(prefix) ? null : prefix,
+                            _output);
+                        break;
+                    }
                     case "0":
                         return;
                     default:

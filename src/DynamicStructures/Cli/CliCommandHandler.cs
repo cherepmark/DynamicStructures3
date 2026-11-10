@@ -63,6 +63,11 @@ public static class CliCommandHandler
 
                     AppActions.ConvertInfixExpression(string.Join(' ', args[1..]), output);
                     return 0;
+                case "--tree":
+                    AppActions.RunTreeBuilder(
+                        args.Length >= 2 ? string.Join(' ', args[1..]) : null,
+                        output);
+                    return 0;
                 case "--applications":
                     AppActions.RunApplications(output);
                     return 0;
@@ -107,6 +112,7 @@ public static class CliCommandHandler
         writer.WriteLine("  --queue-file <path> [--standard]  выполнить команды очереди");
         writer.WriteLine("  --postfix <expr>          вычислить постфиксное выражение");
         writer.WriteLine("  --infix <expr>            преобразовать инфиксное выражение и вычислить");
+        writer.WriteLine("  --tree [prefix]           построить дерево из префиксной записи");
         writer.WriteLine("  --applications            четыре примера применения структур");
         writer.WriteLine("  --list-demo               показать все 12 операций списка");
         writer.WriteLine("  --benchmark [repeats]     замеры и генерация отчётов");
@@ -119,6 +125,7 @@ public static class CliCommandHandler
         writer.WriteLine("  dotnet run --project src/DynamicStructures -- --stack-file input.txt");
         writer.WriteLine("  dotnet run --project src/DynamicStructures -- --postfix \"78+32+/\"");
         writer.WriteLine("  dotnet run --project src/DynamicStructures -- --infix \"sin(0)+sqrt(9)\"");
+        writer.WriteLine("  dotnet run --project src/DynamicStructures -- --tree \"ABD*G***CE**FH**J**\"");
         writer.WriteLine("  dotnet run --project src/DynamicStructures -c Release -- --benchmark 5");
     }
 }
